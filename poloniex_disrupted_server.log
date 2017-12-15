@@ -1,0 +1,6 @@
+2017-12-15 15:39:12,596 : onConnect
+2017-12-15 15:39:41,095 : onDisconnect
+2017-12-15 15:39:43,001 : onDisconnect
+2017-12-15 15:39:53,011 : Service is disrupted, attempting to reconnect
+2017-12-15 15:39:53,011 : Reconnecting
+2017-12-15 15:39:54,792 : onConnect
