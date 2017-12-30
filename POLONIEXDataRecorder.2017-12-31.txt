@@ -1,0 +1,4 @@
+01:21:07.349 - INFO - [ loggerName: POLONIEXDataRecorder ] - (Utils.py:33||T=139726611670784)
+01:21:08.651 - INFO - [ Connection: Connection opened ] - (connection.py:145||T=139726327990016)
+01:21:08.651 - INFO - [ Connection: Sending event - {'command': 'subscribe', 'channel': 'USDT_BTC'} ] - (connection.py:256||T=139726327990016)
+01:21:08.652 - INFO - [ Connection: Sending event - {'command': 'subscribe', 'channel': 'BTC_LTC'} ] - (connection.py:256||T=139726327990016)
