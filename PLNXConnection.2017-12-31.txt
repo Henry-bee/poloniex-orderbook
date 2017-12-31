@@ -1,0 +1,5 @@
+15:22:59.271 - INFO - [ loggerName: PLNXConnection ] - (Utils.py:33||T=140679588054784)
+15:23:00.297 - INFO - [ Connection: Connection opened ] - (connection.py:228||T=140679588054784)
+15:23:34.830 - INFO - [ Connection: Error -  ] - (connection.py:215||T=140679588054784)
+15:23:34.876 - INFO - [ Connection: Connection closed ] - (connection.py:222||T=140679588054784)
+15:23:34.876 - INFO - [ Attempting to connect again in 3 seconds. ] - (connection.py:161||T=140679588054784)
