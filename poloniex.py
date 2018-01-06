@@ -128,7 +128,7 @@ def connect_handler(symbols):
         log.error('The following error has occured: %s' % (err))
 
 def main(channels=''):
-    channels = ['USDT_BTC']
+    channels = ['USDT_BTC', 'BTC_LTC']
     connect_handler(channels)
     while True:
         time.sleep(1)

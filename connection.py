@@ -3,7 +3,11 @@ import ssl
 import Utils
 import time
 import json
+import logging
+import numpy as np
 from Utils import CODE2SYMBOL
+
+logging.basicConfig(filename='.PLNXWebsocketError.txt', level=logging.DEBUG, format='%(asctime)s.%(msecs)03d - %(levelname)s - [ %(message)s ] - (%(filename)s:%(lineno)s||T=%(thread)d)', datefmt='%H:%M:%S')
 
 log = Utils.getLogger(loggerName='PLNXConnection',logLevel='INFO')
 
@@ -52,20 +56,46 @@ class orderBook(object):
         '''
         if isBid:
             # Remove Bid if exists
+
+            newbids = []
+            newBidsize = []
             bid_price = float(datafeed[2])
-            length = len(self.bids)
-            for i in range(0, length):
-                if self.bids[i] ==  bid_price:
-                    self.bids.pop(i)
-                    self.bidSizes.pop(i)
+            for bid, qty in zip(self.bids, self.bidSizes):
+                if bid == bid_price: continue
+                else:
+                    newbids.append(bid)
+                    newBidsize.append(qty)
+
+            if len(newbids) < 5:
+                short = 5 - len(newbids)
+                extension = [0.0] * short
+                newbids.extend(extension)
+                newBidsize.extend(extension)
+
+            self.bids = newbids
+            self.bidSizes = newBidsize
+            
         else:
             # Remove asks if exists
+            
+            newAsks = []
+            newAsksize = []
             ask_price = float(datafeed[2])
-            length = len(self.asks)
-            for i in range(0, length):
-                if self.asks[i] == ask_price:
-                    self.asks.pop(i)
-                    self.askSizes.pop(i)
+            for ask, qty in zip(self.asks, self.askSizes):
+                if ask == ask_price: continue
+                else:
+                    newAsks.append(ask)
+                    newAsksize.append(qty)
+
+            if len(newAsks) < 5:
+                short = 5 - len(newAsks)
+                extension = [0.0] * short
+                newAsks.extend(extension)
+                newAsksize.extend(extension)
+                
+            self.asks = list(newAsks)
+            self.askSizes = list(newAsksize)
+            
 
     def updateTrade(self, rate, amt, id):
         self.ltp = rate
@@ -82,6 +112,7 @@ class orderBook(object):
         if isAsk:
             # ASKS
             askData = list(zip(list(self.asks), list(self.askSizes)))
+            
             askData.append((rate, amt))
 
             # Sort and filter
@@ -169,6 +200,8 @@ class PLNXConnection():
     def _on_message(self, ws, message):
         exchData = json.loads(message)
 
+        if exchData[0] == 1010: return
+
         symbol = CODE2SYMBOL[str(exchData[0])]
         book = self.books[symbol]
 
@@ -185,12 +218,15 @@ class PLNXConnection():
             if str(tick[0]) == 'o':
                 if str(tick[-1]) == "0.00000000":
                     # Order Removal
+                    
                     if tick[1] == 0:
                         # ASKS
-                        book.orderRemoval(tick, False) 
+                        book.orderRemoval(tick, False)
+  
                     else:
                         # BIDS
                         book.orderRemoval(tick, True)
+ 
                 else:
                     # NEW ORDER
                     if tick[1] == 0:
@@ -200,8 +236,8 @@ class PLNXConnection():
                         # BIDs
                         book.updateBidAsk(tick, False)
 
-                bids, bidSizes = book.bids, book.bidSizes
-                asks, askSizes = book.asks, book.askSizes
+                bids, bidSizes = list(book.bids), list(book.bidSizes)
+                asks, askSizes = list(book.asks), list(book.askSizes)
                 self.onUpdate([zip(bids, bidSizes),zip(asks, askSizes)],'orderbook_' + book.symbol)
 
             if str(tick[0]) == 't':
